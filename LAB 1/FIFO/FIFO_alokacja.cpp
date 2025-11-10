@@ -6,23 +6,26 @@ using namespace std;
 template <typename T>
 class Queue {
 private:
-    static const int MAX_SIZE = 10;
-    T data[MAX_SIZE];
+
+    T* data;    // wskaźnik do dynamicznej tablicy
+    int max_size;
     int pierwszy;
     int ostatni;
     int count;
 
 public:
     // Konstruktor
-    Queue() : pierwszy(0), ostatni(0), count(0) {}
+    Queue(int rozmiar) : pierwszy(0), ostatni(0), count(0), max_size(rozmiar) {
+        data = new T[max_size];    // dynamiczna alokacja pamięci
+    }
 
     void enqueue(const T& element) {
-        if (count >= MAX_SIZE) {
+        if (count >= max_size) {
             throw overflow_error("Kolejka jest pelna!");
         }
 
         data[ostatni] = element;
-        ostatni = (ostatni + 1) % MAX_SIZE;
+        ostatni = (ostatni + 1) % max_size;
         count++;
     }
 
@@ -32,7 +35,7 @@ public:
         }
 
         T element = data[pierwszy];
-        pierwszy = (pierwszy + 1) % MAX_SIZE;
+        pierwszy = (pierwszy + 1) % max_size;
         count--;
         return element;
     }
@@ -46,6 +49,9 @@ public:
     int size() const {
         return count;
     }
+    ~Queue() {
+        delete[] data;
+    }
 
 
     void display() const {
@@ -54,7 +60,7 @@ public:
         for (int i = 0; i < count; i++) {
             cout << data[current];
             if (i < count - 1) cout << ", ";
-            current = (current + 1) % MAX_SIZE;
+            current = (current + 1) % max_size;
         }
         cout << "]" << endl;
         cout << "Front: " << pierwszy << ", Rear: " << ostatni << ", Count: " << count << endl;
@@ -63,7 +69,11 @@ public:
 
 
 int main() {
-    Queue<int> queue;
+    int rozmiar;
+    cout << "Podaj rozmiar kolejki: ";
+    cin >> rozmiar;
+    Queue<int> queue(rozmiar);
+
     int wybor;
     bool running = true;
 
